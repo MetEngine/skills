@@ -1,0 +1,13 @@
+{
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "name": "MetEngine",
+  "description": "Real-time smart money analytics for Polymarket, Hyperliquid, and Meteora. Pay-per-request x402 API for wallet scoring, insider detection, capital flow tracking, position analysis, and LP/AMM analytics.",
+  "services": [
+    {
+      "name": "A2A",
+      "endpoint": "https://agent.metengine.xyz"
+    }
+  ],
+  "active": true,
+  "x402Support": true
+}
