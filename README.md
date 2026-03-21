@@ -1,43 +1,62 @@
 # MetEngine Data Agent Skill
 
-LLM skill for MetEngine's x402 pay-per-request analytics API across:
-- Polymarket
-- Hyperliquid
-- Meteora
+LLM skill for MetEngine's pay-per-request analytics API across:
+- Polymarket (37 endpoints)
+- Hyperliquid (18 endpoints)
+- Meteora (18 endpoints)
 
-The repo is structured for progressive disclosure so agents load minimal context first, then fetch only the docs needed for the active platform.
+Supports two payment protocols: **MPP** (Tempo EVM) and **x402** (Solana). Payment IS authentication -- no API keys, no accounts.
+
+The repo is structured as a skill graph with YAML frontmatter routing. Agents load `index.md`, match triggers to a skill file, then load only the `requires` chain needed for the task. Max 5 files per task.
 
 ## Repo Layout
 
-- `SKILL.md`: compact orchestrator instructions and loading rules
-- `agents/openai.yaml`: listing metadata for skill directories/UIs
-- `references/docs-index.json`: machine-readable routing map
-- `references/docs-index.md`: human-readable routing guide
-- `references/core-runtime.md`: minimal runtime payment flow
-- `references/core-extended.md`: advanced/troubleshooting details
-- `references/polymarket-endpoints.md`: Polymarket endpoint reference
-- `references/hyperliquid-endpoints.md`: Hyperliquid endpoint reference
-- `references/meteora-endpoints.md`: Meteora endpoint reference
+```
+SKILL.md                          -- Compact orchestrator instructions
+index.md                          -- Routing table (triggers -> skill files)
+core/
+  security.md                     -- Display rules, pricing, wallet security, limits
+  trading-patterns.md             -- MPP + x402 payment flows, error handling, fallbacks
+  connector-template.md           -- Guide for adding new platform connectors
+polymarket/
+  overview.md                     -- 37-endpoint summary, scoring, quirks
+  markets.md                      -- Market discovery endpoints
+  orders.md                       -- Intelligence and trade endpoints
+  positions.md                    -- Wallet analysis endpoints
+hyperliquid/
+  overview.md                     -- 18-endpoint summary, smart score, quirks
+  market-data.md                  -- Coin/market data endpoints
+  trading.md                      -- Trade and pressure endpoints
+  positions.md                    -- Trader profiling endpoints
+meteora/
+  overview.md                     -- 18-endpoint summary, pool types, quirks
+  pools.md                        -- Pool discovery endpoints
+  liquidity.md                    -- LP and position endpoints
+  swaps.md                        -- Platform stats and DCA endpoints
+wallet/
+  overview.md                     -- Provider comparison (MPP vs x402 providers)
+  mpp-signing-flows.md            -- MPP payment flow (Tempo EVM)
+  signing-flows.md                -- Provider-agnostic x402 signing flow (Solana)
+  phantom/setup-and-signing.md    -- Local keypair setup (x402)
+  turnkey/setup-and-signing.md    -- HSM-backed key management (x402)
+  privy/setup-and-signing.md      -- Embedded wallet / social login (x402)
+public/metengine-mpp/SKILL.md    -- Public installable MPP skill for Claude Code
+agents/openai.yaml                -- Listing metadata for skill directories
+references/                       -- Retired (redirects to new structure)
+```
 
 ## Design Goals
 
-- Keep always-loaded skill context small
-- Route queries to one platform doc by default
-- Support remote raw-doc loading from GitHub when skill is installed elsewhere
-- Preserve strict output rule: never truncate addresses/IDs
+- Route queries to minimal context via trigger patterns
+- Max 5 files loaded per task
+- Every file has YAML frontmatter: `skill`, `requires`, `triggers`, `level`
+- `core/security` required by all skills
+- Max dependency depth: 4
+- No file exceeds 300 lines
 
-## Quick Local Check
+## Quick Start
 
-1. Open `SKILL.md`.
-2. Load `references/docs-index.json`.
-3. Load `references/core-runtime.md`.
-4. Load exactly one platform file based on user intent.
-
-## Remote Doc Endpoints
-
-- `https://raw.githubusercontent.com/MetEngine/skill/main/references/docs-index.json`
-- `https://raw.githubusercontent.com/MetEngine/skill/main/references/core-runtime.md`
-- `https://raw.githubusercontent.com/MetEngine/skill/main/references/core-extended.md`
-- `https://raw.githubusercontent.com/MetEngine/skill/main/references/polymarket-endpoints.md`
-- `https://raw.githubusercontent.com/MetEngine/skill/main/references/hyperliquid-endpoints.md`
-- `https://raw.githubusercontent.com/MetEngine/skill/main/references/meteora-endpoints.md`
+1. Open `SKILL.md`
+2. Load `index.md` -- match user intent to a skill via trigger patterns
+3. Load `core/security.md` (always)
+4. Load the matched skill's `requires` chain + the skill itself

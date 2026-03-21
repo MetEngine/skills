@@ -1,43 +1,12 @@
 {
-  "schema_version": "1.0",
-  "service": "metengine-data-agent",
-  "base_url": "https://agent.metengine.xyz",
-  "pricing_url": "https://agent.metengine.xyz/api/v1/pricing",
-  "health_url": "https://agent.metengine.xyz/health",
-  "load_order": [
-    "references/docs-index.json",
-    "references/core-runtime.md",
-    "references/<platform>-endpoints.md",
-    "references/core-extended.md (optional)"
-  ],
-  "remote_docs": {
-    "index": "https://raw.githubusercontent.com/MetEngine/skill/main/references/docs-index.json",
-    "core": "https://raw.githubusercontent.com/MetEngine/skill/main/references/core-runtime.md",
-    "core_extended": "https://raw.githubusercontent.com/MetEngine/skill/main/references/core-extended.md",
-    "polymarket": "https://raw.githubusercontent.com/MetEngine/skill/main/references/polymarket-endpoints.md",
-    "hyperliquid": "https://raw.githubusercontent.com/MetEngine/skill/main/references/hyperliquid-endpoints.md",
-    "meteora": "https://raw.githubusercontent.com/MetEngine/skill/main/references/meteora-endpoints.md"
-  },
-  "routing": [
-    {
-      "platform": "polymarket",
-      "file": "references/polymarket-endpoints.md",
-      "triggers": ["condition_id", "market", "outcome", "holders", "prediction"]
-    },
-    {
-      "platform": "hyperliquid",
-      "file": "references/hyperliquid-endpoints.md",
-      "triggers": ["perp", "funding", "open interest", "leverage", "coin"]
-    },
-    {
-      "platform": "meteora",
-      "file": "references/meteora-endpoints.md",
-      "triggers": ["pool", "lp", "dlmm", "damm", "apr", "impermanent loss"]
-    }
-  ],
-  "rules": {
-    "address_display": "Never truncate addresses or IDs",
-    "context_budget": "Load core + one platform by default",
-    "payment": "x402 on Solana mainnet using USDC"
+  "_retired": true,
+  "_message": "This file has been replaced by skills/index.md which contains the routing table with trigger patterns and requires chains.",
+  "_migration": {
+    "routing": "index.md",
+    "core": "core/security.md",
+    "payment": "core/trading-patterns.md",
+    "polymarket": "polymarket/overview.md",
+    "hyperliquid": "hyperliquid/overview.md",
+    "meteora": "meteora/overview.md"
   }
 }

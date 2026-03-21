@@ -1,5 +1,5 @@
 version: 1
 interface:
   display_name: MetEngine Data Agent
-  short_description: Smart money analytics for Polymarket, Hyperliquid, and Meteora via x402 Solana USDC payments.
-  default_prompt: Analyze wallet, market, perp, and LP flow using MetEngine API. Fetch only the required platform docs, then call the relevant endpoint with x402 payment signing.
+  short_description: Smart money analytics for Polymarket, Hyperliquid, and Meteora. Pay per request with USDC via MPP (Tempo EVM) or x402 (Solana). No API keys.
+  default_prompt: Analyze wallet, market, perp, and LP flow using MetEngine API. Fetch only the required platform docs, then call the relevant endpoint with either MPP (Tempo EVM) or x402 (Solana) payment signing.
