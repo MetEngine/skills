@@ -9,6 +9,12 @@ level: implementation
 
 MPP uses standard HTTP authentication headers for pay-per-request API access using EVM stablecoins (USDC.e on Tempo chain). The flow is: challenge -> credential -> receipt, using `WWW-Authenticate: Payment`, `Authorization: Payment`, and `Payment-Receipt` headers.
 
+**Before any `mppx` CLI or SDK usage, set the mainnet RPC.** The `mppx` CLI defaults to Tempo testnet (chain 42431), which will fail with `TIP20 token error: Uninitialized`. MetEngine runs on mainnet only.
+
+```bash
+export MPPX_RPC_URL=https://rpc.presto.tempo.xyz
+```
+
 ## Tempo Chain Details
 
 | Detail | Value |
@@ -37,12 +43,14 @@ Key difference from x402: Server only broadcasts the transaction AFTER confirmin
 ```typescript
 import { createClient } from "mppx/client";
 import { createWalletClient, http } from "viem";
+import { tempo } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 
-// Create viem wallet (see "Wallet Setup" section below for options)
+// Create viem wallet -- MUST use Tempo mainnet RPC and chain
 const account = privateKeyToAccount(process.env.EVM_PRIVATE_KEY as `0x${string}`);
 const wallet = createWalletClient({
   account,
+  chain: tempo, // Tempo mainnet (chain ID 4217)
   transport: http("https://rpc.presto.tempo.xyz"),
 });
 
@@ -139,13 +147,15 @@ bun add mppx viem
 
 ```typescript
 import { createWalletClient, http } from "viem";
+import { tempo } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 
 // From private key (development/CLI)
 const account = privateKeyToAccount(process.env.EVM_PRIVATE_KEY as `0x${string}`);
 const wallet = createWalletClient({
   account,
-  transport: http("https://rpc.presto.tempo.xyz"), // Tempo mainnet (chain ID 4217)
+  chain: tempo, // Tempo mainnet (chain ID 4217) -- do NOT omit or use tempoTestnet
+  transport: http("https://rpc.presto.tempo.xyz"),
 });
 
 // Or use browser wallet (MetaMask, etc.)
@@ -155,19 +165,25 @@ const wallet = createWalletClient({
 ## Wallet Setup (mppx CLI)
 
 ```bash
-# Create a new wallet (stored locally in ~/.mppx/)
+# 1. Set mainnet RPC FIRST (mppx defaults to testnet without this!)
+export MPPX_RPC_URL=https://rpc.presto.tempo.xyz
+
+# 2. Create a new wallet (stored locally in ~/.mppx/)
 npx mppx account create
 
-# View wallet address
+# 3. View wallet address
 npx mppx account view
 
-# Fund with USDC.e on Tempo chain:
-# - Bridge from Ethereum/Arbitrum/Base via https://bridge.tempo.xyz
-# - Send USDC.e to the address shown by `account view`
-# - USDC.e contract: 0x20C000000000000000000000b9537d11c60E8b50
+# 4. Fund with USDC.e on Tempo mainnet:
+#    - Bridge from Ethereum/Arbitrum/Base via https://bridge.tempo.xyz
+#    - Send USDC.e to the address shown by `account view`
+#    - USDC.e contract: 0x20C000000000000000000000b9537d11c60E8b50
 
-# Make a request (automatic 402 handling)
+# 5. Make a request (automatic 402 handling)
 npx mppx https://agent.metengine.xyz/api/v1/markets/trending?timeframe=24h&limit=5
+
+# Alternative: pass -r per request instead of env var
+npx mppx -r https://rpc.presto.tempo.xyz https://agent.metengine.xyz/api/v1/markets/trending
 ```
 
 ## Health Check (No Signing Required)
@@ -182,13 +198,14 @@ These endpoints are free and require no wallet or payment.
 
 ## Onboarding Path
 
-1. Verify service is live: `GET /health`
-2. Check discovery: `GET /.well-known/mpp` (endpoint catalog, pricing)
-3. Make a paid request: `GET /api/v1/markets/trending?timeframe=24h&limit=5`
-4. First call returns `402` with `WWW-Authenticate: Payment` header.
-5. Sign a TIP-20 USDC transfer (pull mode -- do NOT broadcast yourself).
-6. Re-send with `Authorization: Payment <credential>`.
-7. Receive `200` with data + `Payment-Receipt` header containing tx hash.
+1. Set mainnet RPC: `export MPPX_RPC_URL=https://rpc.presto.tempo.xyz`
+2. Verify service is live: `GET /health`
+3. Check discovery: `GET /.well-known/mpp` (endpoint catalog, pricing)
+4. Make a paid request: `GET /api/v1/markets/trending?timeframe=24h&limit=5`
+5. First call returns `402` with `WWW-Authenticate: Payment` header.
+6. Sign a TIP-20 USDC transfer (pull mode -- do NOT broadcast yourself).
+7. Re-send with `Authorization: Payment <credential>`.
+8. Receive `200` with data + `Payment-Receipt` header containing tx hash.
 
 ## Important: Pull Mode Only
 
