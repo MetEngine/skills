@@ -24,6 +24,29 @@ Real-time smart money analytics API. 73 endpoints across three platforms. Pay pe
 
 **Base URL:** `https://agent.metengine.xyz`
 
+## Agent Instructions
+
+Everything you need is in this file. Do NOT explore, discover, or guess.
+
+**Rules:**
+1. The base URL is ALWAYS `https://agent.metengine.xyz` -- never guess other URLs
+2. Do NOT run `npx mppx --help`, `npx mppx --llms`, or any discovery commands
+3. Do NOT search the codebase for API docs -- this file IS the complete reference
+4. Match the user's intent to an endpoint from the tables below
+5. Construct the full URL with query parameters and run it directly:
+   ```
+   npx mppx "https://agent.metengine.xyz/api/v1/<endpoint>?<params>"
+   ```
+6. For POST endpoints, use: `npx mppx -X POST -d '{"key":"value"}' "https://agent.metengine.xyz/api/v1/<endpoint>"`
+7. `mppx` handles 402 payment challenges automatically -- no manual signing needed
+8. Parse the JSON response and present the data clearly to the user
+
+**Pre-flight (first request only):**
+```bash
+npx mppx account list
+```
+If no accounts exist, tell the user to run `npx mppx account create` and fund the wallet.
+
 ## Platforms
 
 | Platform | Endpoints | Domain |
@@ -84,7 +107,7 @@ const response = await client.fetch(
 const { data } = await response.json();
 ```
 
-### 3. How payment works
+### 4. How payment works
 
 ```
 1. Client: GET /api/v1/markets/trending
@@ -353,4 +376,20 @@ MetEngine also supports x402 payment protocol on Solana Mainnet using USDC. Both
 npm install mppx viem
 # or
 bun add mppx viem
+```
+
+## Troubleshooting
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `TIP20 token error: Uninitialized` | Wallet has no USDC.e on Tempo mainnet | Fund wallet: bridge USDC to Tempo via `https://bridge.tempo.xyz` |
+| `DNS_ERROR` / `Could not resolve host` | Wrong base URL | Use `https://agent.metengine.xyz` -- no other URL exists |
+| `402 Payment Required` | Normal -- mppx handles this automatically | If mppx fails to handle it, check wallet has sufficient USDC.e balance |
+| `Method Not Allowed` | Wrong HTTP method for endpoint | Check endpoint table: GET vs POST |
+| `REQUEST_FAILED` after `mppx account fund` | `fund` provides testnet tokens only | MetEngine runs on mainnet -- bridge real USDC via `https://bridge.tempo.xyz` |
+
+**Verify wallet is funded:**
+```bash
+npx mppx account view
+# Look for a non-zero USDC balance (not testnet tokens)
 ```
