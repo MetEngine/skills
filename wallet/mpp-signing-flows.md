@@ -9,9 +9,10 @@ level: implementation
 
 MPP uses standard HTTP authentication headers for pay-per-request API access using EVM stablecoins (USDC.e on Tempo chain). The flow is: challenge -> credential -> receipt, using `WWW-Authenticate: Payment`, `Authorization: Payment`, and `Payment-Receipt` headers.
 
-**Before any `mppx` CLI or SDK usage, set the mainnet RPC.** The `mppx` CLI defaults to Tempo testnet (chain 42431), which will fail with `TIP20 token error: Uninitialized`. MetEngine runs on mainnet only.
+**The `mppx` CLI defaults to Tempo testnet (chain 42431), which will fail with `TIP20 token error: Uninitialized`.** MetEngine runs on mainnet only. Always pass `-r https://rpc.presto.tempo.xyz` to every `mppx` command. The env var `MPPX_RPC_URL` only works for account subcommands; the tempo payment plugin reads `RPC_URL` instead. Set both to be safe:
 
 ```bash
+export RPC_URL=https://rpc.presto.tempo.xyz
 export MPPX_RPC_URL=https://rpc.presto.tempo.xyz
 ```
 
@@ -165,7 +166,8 @@ const wallet = createWalletClient({
 ## Wallet Setup (mppx CLI)
 
 ```bash
-# 1. Set mainnet RPC FIRST (mppx defaults to testnet without this!)
+# 1. Set BOTH env vars (mppx bug: different commands read different vars)
+export RPC_URL=https://rpc.presto.tempo.xyz
 export MPPX_RPC_URL=https://rpc.presto.tempo.xyz
 
 # 2. Create a new wallet (stored locally in ~/.mppx/)
@@ -179,11 +181,8 @@ npx mppx account view
 #    - Send USDC.e to the address shown by `account view`
 #    - USDC.e contract: 0x20C000000000000000000000b9537d11c60E8b50
 
-# 5. Make a request (automatic 402 handling)
-npx mppx https://agent.metengine.xyz/api/v1/markets/trending?timeframe=24h&limit=5
-
-# Alternative: pass -r per request instead of env var
-npx mppx -r https://rpc.presto.tempo.xyz https://agent.metengine.xyz/api/v1/markets/trending
+# 5. Make a request -- ALWAYS pass -r to guarantee mainnet
+npx mppx -r https://rpc.presto.tempo.xyz https://agent.metengine.xyz/api/v1/markets/trending?timeframe=24h&limit=5
 ```
 
 ## Health Check (No Signing Required)
@@ -198,7 +197,7 @@ These endpoints are free and require no wallet or payment.
 
 ## Onboarding Path
 
-1. Set mainnet RPC: `export MPPX_RPC_URL=https://rpc.presto.tempo.xyz`
+1. Set mainnet RPC: `export RPC_URL=https://rpc.presto.tempo.xyz MPPX_RPC_URL=https://rpc.presto.tempo.xyz`
 2. Verify service is live: `GET /health`
 3. Check discovery: `GET /.well-known/mpp` (endpoint catalog, pricing)
 4. Make a paid request: `GET /api/v1/markets/trending?timeframe=24h&limit=5`

@@ -9,7 +9,7 @@ level: concept
 
 MetEngine supports two payment protocols: **MPP** (Tempo EVM chain) and **x402** (Solana Mainnet). Both protocols are active simultaneously -- the server accepts either. Both use the same settle-after-execute guarantee. MetEngine is mainnet-only; all requests cost real USDC. Recommended initial funding: $5-10 USDC (covers 50-500+ requests).
 
-**MPP requires Tempo mainnet (chain 4217).** The `mppx` CLI defaults to testnet -- you must set `MPPX_RPC_URL=https://rpc.presto.tempo.xyz` before any `mppx` command or pass `-r https://rpc.presto.tempo.xyz`.
+**MPP requires Tempo mainnet (chain 4217).** The `mppx` CLI defaults to testnet -- you must always pass `-r https://rpc.presto.tempo.xyz` to every `mppx` command. The env var `MPPX_RPC_URL` only works for account subcommands; for payment requests the tempo plugin reads `RPC_URL` instead, so set both to be safe: `export RPC_URL=https://rpc.presto.tempo.xyz MPPX_RPC_URL=https://rpc.presto.tempo.xyz`.
 
 ## Protocol Comparison
 
@@ -20,7 +20,7 @@ MetEngine supports two payment protocols: **MPP** (Tempo EVM chain) and **x402**
 | Gas token | Tempo native | SOL |
 | CLI tool | `npx mppx <url>` | None (SDK only) |
 | SDK | `mppx/client` + `viem` | `@x402/core` + `@x402/svm` |
-| Wallet setup | `export MPPX_RPC_URL=https://rpc.presto.tempo.xyz` then `npx mppx account create` | Solana CLI or Phantom export |
+| Wallet setup | `npx mppx account create` then always pass `-r https://rpc.presto.tempo.xyz` | Solana CLI or Phantom export |
 | Headers (402) | `WWW-Authenticate: Payment` | `PAYMENT-REQUIRED` / `X-PAYMENT-REQUIRED` |
 | Headers (200) | `Payment-Receipt` | `PAYMENT-RESPONSE` / `X-PAYMENT-RESPONSE` |
 | Discovery | `GET /.well-known/mpp` | `GET /api/v1/pricing` |
@@ -42,7 +42,8 @@ MetEngine supports two payment protocols: **MPP** (Tempo EVM chain) and **x402**
 ## MPP Quick Start
 
 ```bash
-# 1. FIRST: Set mainnet RPC (mppx defaults to testnet without this!)
+# 1. Set BOTH env vars (mppx has a bug: different commands read different vars)
+export RPC_URL=https://rpc.presto.tempo.xyz
 export MPPX_RPC_URL=https://rpc.presto.tempo.xyz
 
 # 2. Create a wallet (one-time, stores locally)
@@ -53,13 +54,13 @@ npx mppx account view
 
 # 4. Fund wallet with USDC.e on Tempo mainnet (bridge via https://bridge.tempo.xyz)
 
-# 5. Make requests (automatic 402 handshake)
-npx mppx https://agent.metengine.xyz/api/v1/markets/trending?timeframe=24h&limit=5
+# 5. Make requests -- ALWAYS pass -r to guarantee mainnet
+npx mppx -r https://rpc.presto.tempo.xyz https://agent.metengine.xyz/api/v1/markets/trending?timeframe=24h&limit=5
 
 # Free endpoints (no wallet needed)
-npx mppx https://agent.metengine.xyz/health
-npx mppx https://agent.metengine.xyz/.well-known/mpp
-npx mppx https://agent.metengine.xyz/api/v1/pricing
+curl -sS https://agent.metengine.xyz/health
+curl -sS https://agent.metengine.xyz/.well-known/mpp
+curl -sS https://agent.metengine.xyz/api/v1/pricing
 ```
 
 See `wallet/mpp-signing-flows` for programmatic TypeScript usage.
