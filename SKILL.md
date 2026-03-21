@@ -322,3 +322,76 @@ Never truncate addresses or IDs. Always use full values.
 npx mppx account view
 # Look for a non-zero USDC balance (not testnet tokens)
 ```
+
+## mppx CLI Reference
+
+`mppx` is the CLI tool for making paid requests and managing wallets on Tempo chain.
+
+### mppx account create
+
+Create a new EVM wallet (stored locally in `~/.config/mppx/`).
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `--account` | `string` | Account name (env: MPPX_ACCOUNT) |
+| `--rpcUrl` | `string` | RPC endpoint (env: MPPX_RPC_URL) |
+
+### mppx account view
+
+View account address and balances.
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `--account` | `string` | Account name (env: MPPX_ACCOUNT) |
+| `--rpcUrl` | `string` | RPC endpoint (env: MPPX_RPC_URL) |
+
+### mppx account list
+
+List all accounts. Default account is marked with `*`.
+
+### mppx account default
+
+Set the default account.
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `--account` | `string` | Account name |
+
+### mppx account fund
+
+Fund account with **testnet** tokens (not valid for MetEngine mainnet).
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `--account` | `string` | Account name (env: MPPX_ACCOUNT) |
+| `--rpcUrl` | `string` | RPC endpoint (env: MPPX_RPC_URL) |
+
+### mppx account delete
+
+Delete an account.
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `--account` | `string` | Account name |
+| `--yes` | `boolean` | Skip confirmation prompts |
+
+### mppx sign
+
+Sign a payment challenge and output the Authorization header.
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `--account` | `string` | Account name (env: MPPX_ACCOUNT) |
+| `--challenge` | `string` | WWW-Authenticate challenge value |
+| `--config` | `string` | Path to config file |
+| `--dryRun` | `boolean` | Validate and parse the challenge without signing |
+| `--methodOpt` | `array` | Method-specific option (key=value, repeatable) |
+| `--rpcUrl` | `string` | RPC endpoint, defaults to public RPC for chain (env: MPPX_RPC_URL) |
+
+### mppx init
+
+Create an `mppx.config.ts` file in the current directory.
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `--force` | `boolean` | Overwrite existing config file |
