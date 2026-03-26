@@ -36,7 +36,7 @@ Wallet addresses for Polymarket API calls MUST be lowercase. Meteora addresses a
 - Payment IS authentication. No API keys, no accounts.
 - Settlement occurs ONLY on successful `2xx` responses (settle-after-execute).
 - If a query fails (timeout, server error), no payment is settled. The agent keeps funds.
-- Two protocols supported: **MPP** (Tempo EVM) and **x402** (Solana).
+- Three protocols supported: **MPP on Tempo** (EVM), **MPP on Solana** (`@solana/mpp`), and **x402** (Solana).
 
 ### MPP (Tempo EVM)
 
@@ -76,7 +76,7 @@ Wallet addresses for Polymarket API calls MUST be lowercase. Meteora addresses a
 
 - Floor: $0.01 USDC per request
 - Ceiling: $0.20 USDC per request
-- All prices in USDC (Tempo EVM for MPP, Solana Mainnet for x402)
+- All prices in USDC (Tempo EVM for MPP Tempo, Solana Mainnet for MPP Solana and x402)
 
 ### Tier Base Costs
 
@@ -129,4 +129,4 @@ Check `~/.claude/agents/metengine-memory.md` before any API call. If it exists, 
 7. Wallet scores use MetEngine proprietary models (not customizable).
 8. No cross-platform wallet linking.
 9. Not a price oracle. Polymarket prices = implied probabilities (0-1).
-10. 73 endpoints only. If a path is not in this skill graph, it does not exist.
+10. 74 endpoints only. If a path is not in this skill graph, it does not exist.

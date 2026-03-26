@@ -9,7 +9,7 @@ level: concept
 
 Shared patterns for intelligence, insider detection, and whale-trade flows across all platforms.
 
-MetEngine supports two payment protocols. Both use the same settle-after-execute guarantee: failed queries = no charge.
+MetEngine supports three payment protocols. All use the same settle-after-execute guarantee: failed queries = no charge.
 
 ## MPP Payment Flow (Tempo EVM)
 
@@ -80,6 +80,38 @@ async function paidFetch(path: string, opts?: { method?: string; body?: Record<s
 
 ```bash
 bun add mppx viem
+```
+
+## MPP Solana Payment Flow
+
+```
+1. GET /api/v1/<endpoint>                          --> 402 + WWW-Authenticate: Payment method="solana"
+2. @solana/mpp client parses challenge, signs USDC SPL transfer
+3. GET /api/v1/<endpoint> + Authorization: Payment  --> 200 + data + Payment-Receipt header
+```
+
+### MPP Solana Client Bootstrap (TypeScript/Bun)
+
+```typescript
+import { Mppx, solana } from "@solana/mpp/client";
+import { createKeyPairSignerFromBytes, getBase58Encoder } from "@solana/kit";
+
+const bytes = getBase58Encoder().encode(process.env.SOLANA_PRIVATE_KEY!);
+const signer = await createKeyPairSignerFromBytes(bytes);
+
+const mppx = Mppx.create({
+  methods: [solana.charge({ signer })],
+});
+
+// Automatic 402 handling -- signs and retries with credential
+const response = await mppx.fetch("https://agent.metengine.xyz/api/v1/markets/trending?timeframe=24h");
+const { data } = await response.json();
+```
+
+### Dependencies
+
+```bash
+bun add @solana/mpp mppx @solana/kit
 ```
 
 ## x402 Payment Flow (Solana)

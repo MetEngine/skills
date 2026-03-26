@@ -7,31 +7,35 @@ level: concept
 
 # Wallet Provider Overview
 
-MetEngine supports two payment protocols: **MPP** (Tempo EVM chain) and **x402** (Solana Mainnet). Both protocols are active simultaneously -- the server accepts either. Both use the same settle-after-execute guarantee. MetEngine is mainnet-only; all requests cost real USDC. Recommended initial funding: $5-10 USDC (covers 50-500+ requests).
+MetEngine supports three payment protocols: **MPP on Tempo** (EVM), **MPP on Solana** (`@solana/mpp`), and **x402** (Solana). All protocols are active simultaneously -- the server accepts any. All use the same settle-after-execute guarantee. MetEngine is mainnet-only; all requests cost real USDC. Recommended initial funding: $5-10 USDC (covers 50-500+ requests).
 
-**MPP requires Tempo mainnet (chain 4217).** The `mppx` CLI defaults to testnet -- you must always pass `-r https://rpc.presto.tempo.xyz` to every `mppx` command. The env var `MPPX_RPC_URL` only works for account subcommands; for payment requests the tempo plugin reads `RPC_URL` instead, so set both to be safe: `export RPC_URL=https://rpc.presto.tempo.xyz MPPX_RPC_URL=https://rpc.presto.tempo.xyz`.
+**MPP Tempo requires Tempo mainnet (chain 4217).** The `mppx` CLI defaults to testnet -- you must always pass `-r https://rpc.presto.tempo.xyz` to every `mppx` command. The env var `MPPX_RPC_URL` only works for account subcommands; for payment requests the tempo plugin reads `RPC_URL` instead, so set both to be safe: `export RPC_URL=https://rpc.presto.tempo.xyz MPPX_RPC_URL=https://rpc.presto.tempo.xyz`.
 
 ## Protocol Comparison
 
-| Feature | MPP (Tempo EVM) | x402 (Solana) |
-|---------|-----------------|---------------|
-| Chain | Tempo (EVM) | Solana Mainnet |
-| Currency | USDC (TIP-20) | USDC (SPL) |
-| Gas token | Tempo native | SOL |
-| CLI tool | `npx mppx <url>` | None (SDK only) |
-| SDK | `mppx/client` + `viem` | `@x402/core` + `@x402/svm` |
-| Wallet setup | `npx mppx account create` then always pass `-r https://rpc.presto.tempo.xyz` | Solana CLI or Phantom export |
-| Headers (402) | `WWW-Authenticate: Payment` | `PAYMENT-REQUIRED` / `X-PAYMENT-REQUIRED` |
-| Headers (200) | `Payment-Receipt` | `PAYMENT-RESPONSE` / `X-PAYMENT-RESPONSE` |
-| Discovery | `GET /.well-known/mpp` | `GET /api/v1/pricing` |
+| Feature | MPP Tempo (EVM) | MPP Solana | x402 (Solana) |
+|---------|-----------------|------------|---------------|
+| Chain | Tempo (EVM) | Solana Mainnet | Solana Mainnet |
+| Currency | USDC.e (TIP-20) | USDC (SPL) | USDC (SPL) |
+| Gas token | Tempo native | SOL | SOL |
+| CLI tool | `npx mppx <url>` | None (SDK only) | None (SDK only) |
+| SDK | `mppx/client` + `viem` | `@solana/mpp` + `@solana/kit` | `@x402/core` + `@x402/svm` |
+| Wallet setup | `npx mppx account create` | Solana CLI or Phantom export | Solana CLI or Phantom export |
+| Headers (402) | `WWW-Authenticate: Payment` | `WWW-Authenticate: Payment` | `PAYMENT-REQUIRED` / `X-PAYMENT-REQUIRED` |
+| Headers (200) | `Payment-Receipt` | `Payment-Receipt` | `PAYMENT-RESPONSE` / `X-PAYMENT-RESPONSE` |
+| Discovery | `GET /.well-known/mpp` | `GET /.well-known/mpp` | `GET /.well-known/x402` |
 
 ## Decision Guide
 
-**Use MPP when:**
+**Use MPP Tempo when:**
 - Want the fastest setup (`npx mppx account create` + fund)
 - Running CLI agents or scripts (automatic 402 handling via `mppx`)
 - Building EVM-native applications
-- Want machine-readable discovery via `/.well-known/mpp`
+
+**Use MPP Solana when:**
+- Building MPP-native agents with Solana wallets
+- Want the MPP protocol semantics (challenge/credential/receipt) on Solana
+- Using `@solana/mpp/client` for automatic 402 handling
 
 **Use x402 when:**
 - Already have a funded Solana wallet

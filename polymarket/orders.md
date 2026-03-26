@@ -141,41 +141,6 @@ Per-market insider detection with full two-phase 7-signal scoring. Phase 1 uses 
 }
 ```
 
-#### 28. GET /api/v1/markets/insider-markets
-
-Markets grouped by insider activity. Aggregates the global insider cache by condition_id, showing how many insiders are active per market, their total volume, scores, and dominant outcome. Includes top 3 insiders per market as preview. Data from the 10-minute global cache.
-
-| Param | Type | Default | Values | Required |
-|-------|------|---------|--------|----------|
-| limit | integer | 50 | 1-200 | no |
-| offset | integer | 0 | >= 0 | no |
-| sort_by | string | insider_count | insider_count, total_insider_volume, highest_score, avg_score | no |
-| min_insiders | integer | 2 | 1-100 | no |
-
-```json
-{
-  "data": {
-    "generated_at": "string|null",
-    "markets": [{
-      "condition_id": "string",
-      "question": "string",
-      "category": "string",
-      "insider_count": "number",
-      "total_insider_volume": "number",
-      "highest_score": "number",
-      "avg_score": "number",
-      "dominant_outcome": "string|null",
-      "top_insiders": [{
-        "wallet": "string",
-        "insider_score": "number",
-        "outcome": "string",
-        "buy_usdc": "number"
-      }]
-    }],
-    "total": "number"
-  }
-}
-```
 
 #### 10. GET /api/v1/markets/trades
 

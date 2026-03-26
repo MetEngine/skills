@@ -1,11 +1,11 @@
 # MetEngine Data Agent Skill
 
 LLM skill for MetEngine's pay-per-request analytics API across:
-- Polymarket (37 endpoints)
+- Polymarket (38 endpoints)
 - Hyperliquid (18 endpoints)
 - Meteora (18 endpoints)
 
-Supports two payment protocols: **MPP** (Tempo EVM) and **x402** (Solana). Payment IS authentication -- no API keys, no accounts.
+Supports three payment protocols: **MPP on Tempo** (EVM), **MPP on Solana** (`@solana/mpp`), and **x402** (Solana). Payment IS authentication -- no API keys, no accounts.
 
 The repo is structured as a skill graph with YAML frontmatter routing. Agents load `index.md`, match triggers to a skill file, then load only the `requires` chain needed for the task. Max 5 files per task.
 
@@ -19,7 +19,7 @@ core/
   trading-patterns.md             -- MPP + x402 payment flows, error handling, fallbacks
   connector-template.md           -- Guide for adding new platform connectors
 polymarket/
-  overview.md                     -- 37-endpoint summary, scoring, quirks
+  overview.md                     -- 38-endpoint summary, scoring, quirks
   markets.md                      -- Market discovery endpoints
   orders.md                       -- Intelligence and trade endpoints
   positions.md                    -- Wallet analysis endpoints

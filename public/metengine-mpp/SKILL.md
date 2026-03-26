@@ -1,6 +1,6 @@
 ---
 name: metengine-mpp
-description: Real-time smart money analytics across Polymarket prediction markets, Hyperliquid perpetual futures, and Meteora Solana LP/AMM pools. 73 endpoints. Pay per request with USDC via MPP (Machine Payments Protocol) -- no API keys, no accounts.
+description: Real-time smart money analytics across Polymarket prediction markets, Hyperliquid perpetual futures, and Meteora Solana LP/AMM pools. 74 endpoints. Pay per request with USDC via MPP (Tempo EVM or Solana) or x402 (Solana) -- no API keys, no accounts.
 triggers:
   - smart money
   - prediction market
@@ -20,7 +20,7 @@ triggers:
 
 # MetEngine Data Agent (MPP)
 
-Real-time smart money analytics API. 73 endpoints across three platforms. Pay per request with USDC on Tempo (EVM) via MPP -- no API keys, no accounts needed.
+Real-time smart money analytics API. 74 endpoints across three platforms. Pay per request with USDC via MPP (Tempo EVM or Solana) or x402 (Solana) -- no API keys, no accounts needed.
 
 **Base URL:** `https://agent.metengine.xyz`
 
@@ -51,7 +51,7 @@ If no accounts exist, tell the user to run `npx mppx account create` and fund th
 
 | Platform | Endpoints | Domain |
 |----------|-----------|--------|
-| Polymarket | 37 | Prediction markets (Polygon) |
+| Polymarket | 38 | Prediction markets (Polygon) |
 | Hyperliquid | 18 | Perpetual futures (Hyperliquid L1) |
 | Meteora | 18 | Solana LP/AMM pools |
 
@@ -155,7 +155,7 @@ Prices scale dynamically based on query parameters:
 - **Filter discounts:** category=0.7x, condition_id=0.5x, smart_money_only=0.7x, pool_address=0.5x, coin=0.7x, pool_type=0.7x
 - **Floor:** $0.01 | **Ceiling:** $0.20
 
-## Polymarket Endpoints (37)
+## Polymarket Endpoints (38)
 
 ### Markets
 
@@ -164,6 +164,7 @@ Prices scale dynamically based on query parameters:
 | `GET /api/v1/markets/trending` | $0.02 | Trending markets with volume spikes |
 | `GET /api/v1/markets/search` | $0.01 | Search markets by keyword, category, status, or URL |
 | `GET /api/v1/markets/categories` | $0.01 | All categories with activity stats |
+| `GET /api/v1/markets/closing-soon` | $0.01 | Markets closing within a time window (1-72h), filterable by category |
 | `POST /api/v1/markets/intelligence` | $0.05 | Full smart money intelligence report for a market |
 | `GET /api/v1/markets/price-history` | $0.01 | OHLCV price/probability time series |
 | `POST /api/v1/markets/sentiment` | $0.02 | Sentiment time series with smart money overlay |
@@ -366,16 +367,20 @@ The `/.well-known/mpp` endpoint returns the complete machine-readable service ma
 npx mppx https://agent.metengine.xyz/.well-known/mpp
 ```
 
-## Dual Protocol Support
+## All Payment Protocols
 
-MetEngine also supports x402 payment protocol on Solana Mainnet using USDC. Both protocols provide the same settle-after-execute guarantee.
+MetEngine accepts three payment protocols on every endpoint: MPP on Tempo (EVM USDC.e), MPP on Solana (`@solana/mpp` USDC), and x402 on Solana (USDC). All three provide the same settle-after-execute guarantee -- failed queries are never charged.
 
 ## Dependencies
 
+**MPP on Tempo (EVM):**
 ```bash
-npm install mppx viem
-# or
 bun add mppx viem
+```
+
+**MPP on Solana:**
+```bash
+bun add @solana/mpp mppx @solana/kit
 ```
 
 ## Troubleshooting

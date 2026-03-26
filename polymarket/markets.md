@@ -66,7 +66,24 @@ Platform-wide aggregate stats.
 { "data": { "timeframe": "string", "total_volume_usdc": "number", "total_trades": "number", "active_traders": "number", "active_markets": "number", "resolved_markets": "number", "smart_wallet_count": "number", "avg_trade_size_usdc": "number" } }
 ```
 
-#### 6. GET /api/v1/markets/price-history
+#### 6. GET /api/v1/markets/closing-soon
+
+Markets closing within a specified time window. Useful for finding time-sensitive trading opportunities.
+
+| Param | Type | Default | Values | Required |
+|-------|------|---------|--------|----------|
+| hours | number | 24 | 1-72 | no |
+| category | string | - | any valid category | no |
+| limit | number | 20 | 1-100 | no |
+| offset | number | 0 | - | no |
+| sort_by | string | end_date | end_date, category | no |
+| sort_order | string | asc | asc, desc | no |
+
+```json
+{ "data": [{ "condition_id": "string", "question": "string", "slug": "string", "end_date": "ISO 8601", "hours_until_close": "number", "category": "string" }] }
+```
+
+#### 7. GET /api/v1/markets/price-history
 
 OHLCV price/probability time series.
 

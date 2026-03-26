@@ -7,9 +7,9 @@ level: concept
 
 # Polymarket Overview
 
-Prediction market analytics on Polygon. 28 endpoints covering market discovery, smart money intelligence, insider detection, wallet profiling, and capital flow tracking. MetEngine indexes 574M+ trades and scores millions of wallets using a proprietary composite model.
+Prediction market analytics on Polygon. 38 endpoints covering market discovery, smart money intelligence, insider detection, wallet profiling, and capital flow tracking. MetEngine indexes 574M+ trades and scores millions of wallets using a proprietary composite model.
 
-## Endpoint Summary (28 endpoints)
+## Endpoint Summary (38 endpoints)
 
 | # | Method | Path | Tier | Description |
 |---|--------|------|------|-------------|
@@ -40,7 +40,17 @@ Prediction market analytics on Polygon. 28 endpoints covering market discovery, 
 | 25 | GET | /api/v1/wallets/alpha-callers | heavy | Early movers on later-trending markets |
 | 26 | GET | /api/v1/markets/dumb-money | medium | Low-score positions (contrarian indicator) |
 | 27 | GET | /api/v1/wallets/insiders | heavy | Global insider candidates |
-| 28 | GET | /api/v1/markets/insider-markets | medium | Markets grouped by insider activity |
+| 28 | GET | /api/v1/markets/smart-signals | heavy | Per-market aggregated smart wallet directional signals |
+| 29 | POST | /api/v1/markets/smart-flow | medium | Smart money accumulation vs distribution time series |
+| 30 | GET | /api/v1/markets/new-smart-interest | heavy | Markets with first-time smart wallet positions |
+| 31 | GET | /api/v1/markets/dumb-consensus | heavy | Global dumb money consensus (contrarian indicator) |
+| 32 | GET | /api/v1/markets/capital-flow-comparison | medium | Multi-timeframe capital flow comparison |
+| 33 | POST | /api/v1/wallets/portfolio | whale | Aggregate portfolio view for a watchlist |
+| 34 | GET | /api/v1/wallets/insiders/trend | medium | Insider activity trend over time |
+| 35 | GET | /api/v1/markets/early-movers | medium | Earliest buyers for a market |
+| 36 | GET | /api/v1/markets/ownership | medium | Token ownership distribution |
+| 37 | GET | /api/v1/markets/volume-by-group | medium | Volume grouped by category, hour, or day |
+| 38 | GET | /api/v1/markets/closing-soon | light | Markets closing within a time window (1-72h) |
 
 ## Scoring System (0-100)
 
@@ -69,4 +79,3 @@ Smart money threshold: score >= 60. Dumb money threshold: score < 30.
 - `/wallets/top-performers?timeframe=7d` may 503. Try `timeframe=24h`.
 - `/trades/whales` returns REDEEM trades alongside real trades.
 - `/markets/insiders` has a 10s timeout on full two-phase scoring. Fallback: `/markets/trades` filtered to the market.
-- `/markets/insider-markets` returns empty if global cache is cold (scheduler runs every 10 min).
